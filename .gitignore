@@ -1,0 +1,12 @@
+target/
+bin/
+*.class
+
+# Eclipse files
+.classpath
+.project
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
