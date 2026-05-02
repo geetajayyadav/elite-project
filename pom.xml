@@ -65,7 +65,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Surefire Plugin (runs TestRunner) -->
+            <!-- ✅ FINAL FIX: Surefire Plugin (FORCE JSON GENERATION) -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.4</version>
@@ -73,10 +73,13 @@
                     <includes>
                         <include>**/TestRunner.java</include>
                     </includes>
+                    <systemPropertyVariables>
+                        <cucumber.plugin>pretty, json:target/cucumber.json</cucumber.plugin>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
 
-            <!-- ✅ FINAL FIXED CUCUMBER REPORT PLUGIN -->
+            <!-- ✅ Cucumber Report Plugin -->
             <plugin>
                 <groupId>net.masterthought</groupId>
                 <artifactId>maven-cucumber-reporting</artifactId>
