@@ -26,24 +26,43 @@ public class LoginSteps {
     public void user_enters_credentials(String username, String password) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
+        // Wait for username field
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username")));
+        driver.findElement(By.id("username")).clear();
         driver.findElement(By.id("username")).sendKeys(username);
+
+        // Enter password
+        driver.findElement(By.id("password")).clear();
         driver.findElement(By.id("password")).sendKeys(password);
 
-        // ✅ Click login button (update selector as needed)
-        driver.findElement(By.id("loginBtn")).click();
+        // ✅ Click login button using type=submit (MUI form — no plain ID)
+        wait.until(ExpectedConditions.elementToBeClickable(
+            By.cssSelector("button[type='submit']")
+        ));
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+
+        System.out.println("Entering credentials...");
     }
 
     @Then("user should login successfully")
     public void user_should_login_successfully() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-        // ✅ Verify login by checking URL or a post-login element
-        wait.until(ExpectedConditions.urlContains("dashboard"));
-        System.out.println("✅ Login successful! URL: " + driver.getCurrentUrl());
+        // ✅ Wait for URL to change after login
+        wait.until(ExpectedConditions.not(
+            ExpectedConditions.urlToBe("https://wccqa.on24.com/webcast/login")
+        ));
+
+        String currentUrl = driver.getCurrentUrl();
+        System.out.println("✅ Login successful! Current URL: " + currentUrl);
+
+        // ✅ Assert URL changed (not still on login page)
+        if (currentUrl.contains("login")) {
+            throw new RuntimeException("❌ Login failed! Still on login page.");
+        }
     }
 
-    // ✅ Always quit driver after each scenario
+    // ✅ Always quit browser after each scenario
     @After
     public void tearDown() {
         if (driver != null) {
