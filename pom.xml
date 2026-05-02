@@ -65,7 +65,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Surefire Plugin (for running tests) -->
+            <!-- Surefire Plugin -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.4</version>
@@ -76,7 +76,7 @@
                 </configuration>
             </plugin>
 
-            <!-- ✅ Cucumber Report Plugin (IMPORTANT) -->
+            <!-- ✅ Cucumber Report Plugin (FIXED) -->
             <plugin>
                 <groupId>net.masterthought</groupId>
                 <artifactId>maven-cucumber-reporting</artifactId>
@@ -91,7 +91,9 @@
                         <configuration>
                             <projectName>Elite Project</projectName>
                             <outputDirectory>${project.build.directory}/cucumber-reports</outputDirectory>
-                            <cucumberOutput>${project.build.directory}/cucumber.json</cucumberOutput>
+                            <jsonFiles>
+                                <param>${project.build.directory}/cucumber.json</param>
+                            </jsonFiles>
                         </configuration>
                     </execution>
                 </executions>
