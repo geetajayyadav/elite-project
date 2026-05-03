@@ -18,8 +18,8 @@ public class LoginSteps {
     public static String sessionId;
 
     // 🔐 LambdaTest credentials
-    String username = "lmsajay05";
-    String accessKey = "LT_dpq70g3mftTjP8bODbp7dGhokFWoaqZvX9WkMAfnoIcKG8w";
+    String username = "antimyadav0608";
+    String accessKey = "LT_EwQEgfFlEJtKAEKSzoFJ46sUpQvEaYGO4z0S3hkoUCO2MO1";
 
     String gridURL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
 
