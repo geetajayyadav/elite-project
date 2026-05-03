@@ -1,17 +1,14 @@
 package stepdefinitions;
 
 import io.cucumber.java.en.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.*;
+import org.openqa.selenium.remote.*;
+import org.openqa.selenium.support.ui.*;
 
 import java.net.URL;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 
 public class LoginSteps {
 
@@ -21,9 +18,8 @@ public class LoginSteps {
     public void user_is_on_login_page() {
 
         try {
-            // 🔹 Replace with your credentials
             String username = "lmsajay05";
-            String accessKey = "LT_dpq70g3mftTjP8bODbp7dGhokFWoaqZvX9WkMAfnoIcKG8w";
+            String accessKey = "YOUR_ACCESS_KEY"; // 🔴 Replace
 
             String gridURL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
 
@@ -31,14 +27,11 @@ public class LoginSteps {
             caps.setCapability("browserName", "Chrome");
             caps.setCapability("browserVersion", "latest");
 
-            // ✅ LambdaTest Options (IMPORTANT)
             HashMap<String, Object> ltOptions = new HashMap<>();
             ltOptions.put("platformName", "Windows 11");
             ltOptions.put("build", "Elite Project");
             ltOptions.put("name", "Login Test");
-            ltOptions.put("visual", true);
             ltOptions.put("video", true);
-            ltOptions.put("network", true);
             ltOptions.put("console", true);
 
             caps.setCapability("LT:Options", ltOptions);
@@ -58,20 +51,47 @@ public class LoginSteps {
     @When("user enters username {string} and password {string}")
     public void user_enters_credentials(String username, String password) {
 
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+            // 🔹 Find ALL input fields dynamically
+            List<WebElement> inputs = wait.until(
+                    ExpectedConditions.presenceOfAllElementsLocatedBy(By.tagName("input"))
+            );
 
-            // Wait for username
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username"))).sendKeys(username);
+            WebElement usernameField = null;
+            WebElement passwordField = null;
 
-            // Wait for password
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("password"))).sendKeys(password);
+            for (WebElement input : inputs) {
+                String type = input.getAttribute("type");
 
-            // 🔥 FIX: Proper wait for login button
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("loginButton"))).click();
+                if ("text".equalsIgnoreCase(type)) {
+                    usernameField = input;
+                } else if ("password".equalsIgnoreCase(type)) {
+                    passwordField = input;
+                }
+            }
+
+            if (usernameField == null || passwordField == null) {
+                throw new RuntimeException("Login fields not found");
+            }
+
+            usernameField.clear();
+            usernameField.sendKeys(username);
+
+            passwordField.clear();
+            passwordField.sendKeys(password);
+
+            // 🔥 Find button dynamically (NO hardcoded ID)
+            WebElement loginBtn = wait.until(
+                    ExpectedConditions.elementToBeClickable(
+                            By.xpath("//button | //input[@type='submit']")
+                    )
+            );
+
+            loginBtn.click();
 
         } catch (Exception e) {
-            e.printStackTrace();
             updateTestStatus("failed", "Element not found");
             throw e;
         }
@@ -91,7 +111,7 @@ public class LoginSteps {
         }
     }
 
-    // ✅ LambdaTest Status Update (VERY IMPORTANT)
+    // ✅ LambdaTest status update
     public void updateTestStatus(String status, String reason) {
         try {
             JavascriptExecutor js = (JavascriptExecutor) driver;
