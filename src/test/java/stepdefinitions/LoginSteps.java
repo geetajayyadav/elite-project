@@ -3,9 +3,11 @@ package stepdefinitions;
 import io.cucumber.java.en.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.net.URL;
 import java.time.Duration;
@@ -21,7 +23,7 @@ public class LoginSteps {
         try {
             // 🔹 Replace with your credentials
             String username = "lmsajay05";
-            String accessKey = "LT_dpq70g3mftTjP8bODbp7dGhokFWoaqZvX9WkMAfnoIcKG8w";
+            String accessKey = "YOUR_ACCESS_KEY";
 
             String gridURL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
 
@@ -42,7 +44,7 @@ public class LoginSteps {
             caps.setCapability("LT:Options", ltOptions);
 
             driver = new RemoteWebDriver(new URL(gridURL), caps);
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 
             driver.get("https://wccqa.on24.com/webcast/login");
 
@@ -56,9 +58,23 @@ public class LoginSteps {
     @When("user enters username {string} and password {string}")
     public void user_enters_credentials(String username, String password) {
 
-        driver.findElement(By.id("username")).sendKeys(username);
-        driver.findElement(By.id("password")).sendKeys(password);
-        driver.findElement(By.id("loginButton")).click();
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+
+            // Wait for username
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username"))).sendKeys(username);
+
+            // Wait for password
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("password"))).sendKeys(password);
+
+            // 🔥 FIX: Proper wait for login button
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("loginButton"))).click();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            updateTestStatus("failed", "Element not found");
+            throw e;
+        }
     }
 
     @Then("user should see {string}")
@@ -75,7 +91,7 @@ public class LoginSteps {
         }
     }
 
-    // ✅ VERY IMPORTANT (for LambdaTest reporting)
+    // ✅ LambdaTest Status Update (VERY IMPORTANT)
     public void updateTestStatus(String status, String reason) {
         try {
             JavascriptExecutor js = (JavascriptExecutor) driver;
