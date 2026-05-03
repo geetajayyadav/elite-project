@@ -19,7 +19,7 @@ public class LoginSteps {
 
         try {
             String username = "lmsajay05";
-            String accessKey = "YOUR_ACCESS_KEY"; // 🔴 Replace
+            String accessKey = "LT_dpq70g3mftTjP8bODbp7dGhokFWoaqZvX9WkMAfnoIcKG8w"; // 🔴 Replace
 
             String gridURL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
 
