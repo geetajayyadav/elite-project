@@ -52,6 +52,12 @@
             <artifactId>webdrivermanager</artifactId>
             <version>5.8.0</version>
         </dependency>
+        
+        <dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-remote-driver</artifactId>
+    <version>4.18.1</version>
+</dependency>
 
     </dependencies>
 
@@ -79,7 +85,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Cucumber Reporting Plugin -->
+            
 
 
         </plugins>
