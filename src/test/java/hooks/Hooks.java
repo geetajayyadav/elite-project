@@ -12,30 +12,46 @@ import java.nio.file.Paths;
 public class Hooks {
 
     @After
-    public void takeScreenshotOnFailure(Scenario scenario) {
+    public void takeScreenshotAndAttachVideo(Scenario scenario) {
 
-        if (scenario.isFailed()) {
-            try {
+        try {
+            // ===============================
+            // ✅ EXISTING: Screenshot on failure (UNCHANGED)
+            // ===============================
+            if (scenario.isFailed()) {
+
                 TakesScreenshot ts = (TakesScreenshot) LoginSteps.driver;
 
-                // Capture screenshot
                 byte[] screenshot = ts.getScreenshotAs(OutputType.BYTES);
 
-                // Save to folder
                 String fileName = scenario.getName().replaceAll(" ", "_");
                 String path = "target/screenshots/" + fileName + ".png";
 
                 Files.createDirectories(Paths.get("target/screenshots"));
                 Files.write(Paths.get(path), screenshot);
 
-                // ✅ Attach to Cucumber Report (IMPORTANT)
                 scenario.attach(screenshot, "image/png", fileName);
 
                 System.out.println("Screenshot saved & attached: " + path);
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+
+            // ===============================
+            // 🔥 NEW: LambdaTest Video Link (ALWAYS ATTACHED)
+            // ===============================
+            String sessionId = LoginSteps.sessionId;
+
+            if (sessionId != null) {
+
+                String videoUrl = "https://automation.lambdatest.com/video/" + sessionId;
+
+                System.out.println("LambdaTest Video Link: " + videoUrl);
+
+                // Attach link in report
+                scenario.attach(videoUrl, "text/plain", "LambdaTest Video");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
