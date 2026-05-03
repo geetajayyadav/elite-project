@@ -6,7 +6,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import stepdefinitions.LoginSteps;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -18,13 +17,21 @@ public class Hooks {
         if (scenario.isFailed()) {
             try {
                 TakesScreenshot ts = (TakesScreenshot) LoginSteps.driver;
+
+                // Capture screenshot
                 byte[] screenshot = ts.getScreenshotAs(OutputType.BYTES);
 
-                String path = "target/screenshots/" + scenario.getName() + ".png";
+                // Save to folder
+                String fileName = scenario.getName().replaceAll(" ", "_");
+                String path = "target/screenshots/" + fileName + ".png";
+
                 Files.createDirectories(Paths.get("target/screenshots"));
                 Files.write(Paths.get(path), screenshot);
 
-                System.out.println("Screenshot saved: " + path);
+                // ✅ Attach to Cucumber Report (IMPORTANT)
+                scenario.attach(screenshot, "image/png", fileName);
+
+                System.out.println("Screenshot saved & attached: " + path);
 
             } catch (Exception e) {
                 e.printStackTrace();
