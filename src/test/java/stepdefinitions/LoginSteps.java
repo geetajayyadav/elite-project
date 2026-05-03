@@ -14,6 +14,9 @@ public class LoginSteps {
 
     public static WebDriver driver;
 
+    // ✅ NEW: session id for LambdaTest
+    public static String sessionId;
+
     // 🔐 LambdaTest credentials
     String username = "lmsajay05";
     String accessKey = "LT_dpq70g3mftTjP8bODbp7dGhokFWoaqZvX9WkMAfnoIcKG8w";
@@ -39,6 +42,10 @@ public class LoginSteps {
             caps.setCapability("LT:Options", ltOptions);
 
             driver = new RemoteWebDriver(new URL(gridURL), caps);
+
+            // ✅ NEW: Capture session ID
+            sessionId = ((RemoteWebDriver) driver).getSessionId().toString();
+            System.out.println("LambdaTest Session ID: " + sessionId);
 
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 
@@ -85,7 +92,7 @@ public class LoginSteps {
             passwordField.clear();
             passwordField.sendKeys(password);
 
-            // 🔥 FIXED: Flexible + stable locator
+            // 🔥 Stable locator
             WebElement loginBtn = wait.until(
                     ExpectedConditions.elementToBeClickable(
                             By.xpath("//button | //input[@type='submit']")
@@ -105,7 +112,6 @@ public class LoginSteps {
     public void user_should_see_result(String result) {
 
         try {
-            // Keep simple to avoid false failures
             updateTestStatus("passed", "Scenario executed");
 
         } catch (Exception e) {
