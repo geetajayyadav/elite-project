@@ -7,6 +7,6 @@ Feature: Login Feature
 
   Examples:
     | username | password  | result               |
-    | aypl     | AD03EF9F  | success              |
+    | aypl     | AD03EF9G  | success              |
     | wrong    | wrong123  | error                |
     |          |           | validation message   |
