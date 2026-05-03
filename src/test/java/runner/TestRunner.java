@@ -7,14 +7,20 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
     features = "src/test/resources/features",
-    glue = "stepdefinitions",
+    glue = {"stepdefinitions", "hooks"},   // ✅ IMPORTANT (add hooks)
     plugin = {
         "pretty",
-        "json:target/cucumber-reports/cucumber.json"
+
+        // ✅ JSON for Jenkins (KEEP SAME PATH)
+        "json:target/cucumber-reports/cucumber.json",
+
+        // ✅ HTML report (local debugging)
+        "html:target/cucumber-reports/cucumber.html",
+
+        // ✅ Console logs visible in report
+        "summary"
     },
     monochrome = true
 )
 public class TestRunner {
 }
-
-

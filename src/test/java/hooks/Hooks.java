@@ -11,44 +11,49 @@ import java.nio.file.Paths;
 
 public class Hooks {
 
-	@After
-	public void takeScreenshotAndAttachVideo(Scenario scenario) {
+    @After
+    public void takeScreenshotAndAttachVideo(Scenario scenario) {
 
-	    try {
-	        // Screenshot logic (unchanged)
-	        if (scenario.isFailed()) {
+        try {
+            // ===============================
+            // ✅ Screenshot (UNCHANGED)
+            // ===============================
+            if (scenario.isFailed()) {
 
-	            TakesScreenshot ts = (TakesScreenshot) LoginSteps.driver;
+                TakesScreenshot ts = (TakesScreenshot) LoginSteps.driver;
 
-	            byte[] screenshot = ts.getScreenshotAs(OutputType.BYTES);
+                byte[] screenshot = ts.getScreenshotAs(OutputType.BYTES);
 
-	            String fileName = scenario.getName().replaceAll(" ", "_");
-	            String path = "target/screenshots/" + fileName + ".png";
+                String fileName = scenario.getName().replaceAll(" ", "_");
+                String path = "target/screenshots/" + fileName + ".png";
 
-	            Files.createDirectories(Paths.get("target/screenshots"));
-	            Files.write(Paths.get(path), screenshot);
+                Files.createDirectories(Paths.get("target/screenshots"));
+                Files.write(Paths.get(path), screenshot);
 
-	            scenario.attach(screenshot, "image/png", fileName);
+                scenario.attach(screenshot, "image/png", fileName);
 
-	            System.out.println("Screenshot saved & attached: " + path);
-	        }
+                System.out.println("Screenshot saved & attached: " + path);
+            }
 
-	        // 🔥 FIXED VIDEO LINK
-	        String sessionId = LoginSteps.sessionId;
+            // ===============================
+            // 🔥 REAL FIX: Write video into JSON
+            // ===============================
+            String sessionId = LoginSteps.sessionId;
 
-	        if (sessionId != null) {
+            if (sessionId != null) {
 
-	            String videoUrl = "https://automation.lambdatest.com/video/" + sessionId;
+                String videoUrl = "https://automation.lambdatest.com/video/" + sessionId;
 
-	            String htmlLink = "<a href='" + videoUrl + "' target='_blank'>🎥 LambdaTest Video</a>";
+                String message = "🎥 LambdaTest Video: " + videoUrl;
 
-	            System.out.println("VIDEO LINK: " + videoUrl);
+                // ✅ THIS goes into cucumber.json
+                scenario.attach(message.getBytes(), "text/plain", "LambdaTest Video");
 
-	            scenario.log(htmlLink);   // ✅ THIS WORKS IN REPORT
-	        }
+                System.out.println("Video URL: " + videoUrl);
+            }
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
