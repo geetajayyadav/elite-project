@@ -42,7 +42,8 @@ public class Hooks {
 
             if (sessionId != null) {
 
-                String videoUrl = "https://automation.lambdatest.com/video/" + sessionId;
+                //String videoUrl = "https://automation.lambdatest.com/video/" + sessionId;
+                String videoUrl = "https://automation.lambdatest.com/logs/?sessionID=" + sessionId;
 
                 String message = "🎥 LambdaTest Video: " + videoUrl;
 
