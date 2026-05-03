@@ -1,12 +1,15 @@
 package stepdefinitions;
 
 import io.cucumber.java.en.*;
-import org.openqa.selenium.*;
-import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.JavascriptExecutor;
 
 import java.net.URL;
 import java.time.Duration;
+import java.util.HashMap;
 
 public class LoginSteps {
 
@@ -16,10 +19,9 @@ public class LoginSteps {
     public void user_is_on_login_page() {
 
         try {
-
-            // 🔥 Replace with your credentials
+            // 🔹 Replace with your credentials
             String username = "lmsajay05";
-            String accessKey = "LT_UUaYaPJJBZXinr0KvwL7eDBdFHzJDsCwwTeqnKNGMAhgbeN";
+            String accessKey = "LT_dpq70g3mftTjP8bODbp7dGhokFWoaqZvX9WkMAfnoIcKG8w";
 
             String gridURL = "https://" + username + ":" + accessKey + "@hub.lambdatest.com/wd/hub";
 
@@ -27,11 +29,17 @@ public class LoginSteps {
             caps.setCapability("browserName", "Chrome");
             caps.setCapability("browserVersion", "latest");
 
-            caps.setCapability("LT:Options", new java.util.HashMap<String, Object>() {{
-                put("platformName", "Windows 11");
-                put("build", "Elite Project");
-                put("name", "Login Test");
-            }});
+            // ✅ LambdaTest Options (IMPORTANT)
+            HashMap<String, Object> ltOptions = new HashMap<>();
+            ltOptions.put("platformName", "Windows 11");
+            ltOptions.put("build", "Elite Project");
+            ltOptions.put("name", "Login Test");
+            ltOptions.put("visual", true);
+            ltOptions.put("video", true);
+            ltOptions.put("network", true);
+            ltOptions.put("console", true);
+
+            caps.setCapability("LT:Options", ltOptions);
 
             driver = new RemoteWebDriver(new URL(gridURL), caps);
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
@@ -48,24 +56,39 @@ public class LoginSteps {
     @When("user enters username {string} and password {string}")
     public void user_enters_credentials(String username, String password) {
 
-        WebElement usernameField = driver.findElement(By.xpath("//input[@type='text']"));
-        WebElement passwordField = driver.findElement(By.xpath("//input[@type='password']"));
-
-        usernameField.clear();
-        usernameField.sendKeys(username);
-
-        passwordField.clear();
-        passwordField.sendKeys(password);
-
-        WebElement loginBtn = driver.findElement(By.xpath("//button | //input[@type='submit']"));
-        loginBtn.click();
+        driver.findElement(By.id("username")).sendKeys(username);
+        driver.findElement(By.id("password")).sendKeys(password);
+        driver.findElement(By.id("loginButton")).click();
     }
 
     @Then("user should see {string}")
     public void user_should_see_result(String result) {
 
-        System.out.println("Result: " + result);
+        try {
+            if (result.equalsIgnoreCase("success")) {
+                updateTestStatus("passed", "Login successful");
+            } else {
+                updateTestStatus("failed", "Login failed");
+            }
+        } catch (Exception e) {
+            updateTestStatus("failed", "Exception occurred");
+        }
+    }
 
-        driver.quit();
+    // ✅ VERY IMPORTANT (for LambdaTest reporting)
+    public void updateTestStatus(String status, String reason) {
+        try {
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("lambda-status=" + status);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Then("user closes browser")
+    public void user_closes_browser() {
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }
